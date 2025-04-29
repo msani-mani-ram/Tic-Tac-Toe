@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f8f0ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #6a1b9a;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #9c27b0;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border: 2px solid #ce93d8;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .cell:hover {
+            background-color: #f3e5f5;
+        }
+
+        .score-board {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .score-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .score-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .turn-display {
+            font-size: 1.2em;
+            margin: 20px 0;
+            color: #6a1b9a;
+        }
+
+        .new-game-btn {
+            background: white;
+            border: 2px solid #ce93d8;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1em;
+            transition: all 0.2s;
+        }
+
+        .new-game-btn:hover {
+            background: #f3e5f5;
+        }
+
+        .refresh-icon {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic-Tac-Toe</h1>
+    <div class="subtitle">A classic game of X's and O's</div>
+    
+    <div class="game-grid">
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+    </div>
+
+    <div class="score-board">
+        <div class="score-item">
+            <div class="score-icon">X</div>
+            <span class="score" id="x-score">0</span>
+        </div>
+        <div class="score-item">
+            <div class="score-icon">D</div>
+            <span class="score" id="draw-score">0</span>
+        </div>
+        <div class="score-item">
+            <div class="score-icon">O</div>
+            <span class="score" id="o-score">0</span>
+        </div>
+    </div>
+
+    <div class="turn-display">
+        Current Turn: <span id="current-turn">X</span>
+    </div>
+
+    <button class="new-game-btn">
+        <span class="refresh-icon">↻</span>
+        New Game
+    </button>
+
+    <script>
+        const cells = document.querySelectorAll('[data-cell]');
+        const currentTurnDisplay = document.getElementById('current-turn');
+        const xScore = document.getElementById('x-score');
+        const oScore = document.getElementById('o-score');
+        const drawScore = document.getElementById('draw-score');
+        const newGameBtn = document.querySelector('.new-game-btn');
+    
+        let currentTurn = 'X';
+        let gameBoard = Array(9).fill('');
+        let gameActive = true;
+    
+        function resetBoard() {
+            gameBoard = Array(9).fill('');
+            cells.forEach(cell => {
+                cell.textContent = '';
+            });
+            currentTurn = 'X';
+            currentTurnDisplay.textContent = currentTurn;
+            gameActive = true;
+        }
+    
+        function resetAll() {
+            resetBoard();
+            xScore.textContent = '0';
+            oScore.textContent = '0';
+            drawScore.textContent = '0';
+        }
+    
+        function handleCellClick(cell, index) {
+            if (!gameActive || gameBoard[index] !== '') return;
+    
+            gameBoard[index] = currentTurn;
+            cell.textContent = currentTurn;
+    
+            if (checkWin()) {
+                updateScore(currentTurn);
+                gameActive = false;
+                setTimeout(resetBoard, 1500);
+            } else if (gameBoard.every(cell => cell !== '')) {
+                drawScore.textContent = parseInt(drawScore.textContent) + 1;
+                gameActive = false;
+                setTimeout(resetBoard, 1500);
+            } else {
+                currentTurn = currentTurn === 'X' ? 'O' : 'X';
+                currentTurnDisplay.textContent = currentTurn;
+            }
+        }
+    
+        function checkWin() {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
+            ];
+            return winPatterns.some(pattern => {
+                const [a, b, c] = pattern;
+                return gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c];
+            });
+        }
+    
+        function updateScore(winner) {
+            if (winner === 'X') {
+                xScore.textContent = parseInt(xScore.textContent) + 1;
+            } else {
+                oScore.textContent = parseInt(oScore.textContent) + 1;
+            }
+        }
+    
+        newGameBtn.addEventListener('click', resetAll);
+    
+        cells.forEach((cell, index) => {
+            cell.addEventListener('click', () => handleCellClick(cell, index));
+        });
+    </script>
+       
+</body>
+</html>
