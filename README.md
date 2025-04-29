@@ -15,16 +15,21 @@ A fun and interactive web-based Tic-Tac-Toe game built with **HTML**, **CSS**, a
 
 ## 📸 Preview
 
-![Tic-Tac-Toe Preview](preview.png)  
+[Tic-Tac-Toe Preview] 
 *A screenshot of the game interface.*
 
 ### 🛠️ Tech Stack
+
 HTML5
+
 CSS3 (Flexbox + Grid)
+
 JavaScript (Vanilla)
 
 ### 🧠 Game Rules
 Players take turns marking a square with X or O
+
 The first to get three in a row (horizontally, vertically, or diagonally) wins
+
 If all cells are filled without a winner, it's a draw
 
